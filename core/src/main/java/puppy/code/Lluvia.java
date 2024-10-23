@@ -10,20 +10,20 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.audio.Music;
 
-public class Lluvia {
+public class Lluvia implements Interface {
     private Array<Rectangle> rainDropsPos;
     private Array<Integer> rainDropsType;
     private long lastDropTime;
     private long lastSpecialDropTime;
-    private Texture gotaBuena;
     private Texture gotaMala;
     private Texture gotaCurativa;
     private Sound dropSound;
     private Music rainMusic;
     private Texture gotaFatal;
     private Poderes poderes;
+    private Piezas gotaBuena;
 
-    public Lluvia(Texture gotaBuena, Texture gotaMala, Poderes poderes, Texture gotaCurativa, Texture gotaFatal, Sound ss, Music mm) {
+    public Lluvia(Piezas gotaBuena, Texture gotaMala, Poderes poderes, Texture gotaCurativa, Texture gotaFatal, Sound ss, Music mm) {
         rainMusic = mm;
         dropSound = ss;
         this.gotaBuena = gotaBuena;
@@ -42,10 +42,11 @@ public class Lluvia {
         rainMusic.play();
     }
 
+
     private void crearGotaDeLluvia() {
         Rectangle raindrop = new Rectangle();
-        raindrop.x = MathUtils.random(0, 800 - 64);
-        raindrop.y = 480;
+        raindrop.x = MathUtils.random(0, 1280 - 64);
+        raindrop.y = 720;
         int tipoGota;
         if (TimeUtils.nanoTime() - lastSpecialDropTime > 4000000000L) {
             if (MathUtils.random(1, 20) == 1) {
@@ -62,7 +63,7 @@ public class Lluvia {
             tipoGota = 5;
             raindrop.width = 166;
             raindrop.height = 192;
-        } else if (MathUtils.random(1, 500) == 1) { // Probabilidad para la gota invencible
+        } else if (MathUtils.random(1, 500) == 1) {
             tipoGota = 6;
             raindrop.width = 64;
             raindrop.height = 64;
@@ -82,7 +83,7 @@ public class Lluvia {
             if (rainDropsType.get(i) == 1) // gota dañina
                 batch.draw(gotaMala, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
             else if (rainDropsType.get(i) == 2) // gota buena
-                batch.draw(gotaBuena, raindrop.x, raindrop.y, raindrop.width, raindrop.height);
+                batch.draw(gotaBuena.getGotaBuena(), raindrop.x, raindrop.y, raindrop.width, raindrop.height);
             else if (rainDropsType.get(i) == 3) // gota especial
                 batch.draw(poderes.getGotaEspecial(), raindrop.x, raindrop.y, raindrop.width, raindrop.height);
             else if (rainDropsType.get(i) == 4) // gota curativa
@@ -94,7 +95,7 @@ public class Lluvia {
         }
     }
 
-    public boolean actualizarMovimiento(Tarro tarro) {
+    public boolean actualizarMovimiento(Robot robot) {
         if (TimeUtils.nanoTime() - lastDropTime > 100000000) crearGotaDeLluvia();
         for (int i = 0; i < rainDropsPos.size; i++) {
             Rectangle raindrop = rainDropsPos.get(i);
@@ -103,34 +104,52 @@ public class Lluvia {
                 rainDropsPos.removeIndex(i);
                 rainDropsType.removeIndex(i);
             }
-            if (raindrop.overlaps(tarro.getArea())) {
-                if (rainDropsType.get(i) == 1) { // gota dañina
-                    if (!tarro.isInvencible()) {
-                        tarro.dañar();
-                        if (tarro.getVidas() <= 0)
-                            return false; // Game over
-                    }
-                } else if (rainDropsType.get(i) == 2) { // gota buena
-                    tarro.sumarPuntos(10);
-                    dropSound.play();
-                } else if (rainDropsType.get(i) == 3) { // gota especial
-                    tarro.sumarPuntos(20);
-                    tarro.aumentarVelocidad(50);
-                } else if (rainDropsType.get(i) == 4) { // gota curativa
-                    tarro.aumentarVida(1);
-                    dropSound.play();
-                } else if (rainDropsType.get(i) == 5) { // gota fatal
-                    tarro.setVidas(0);
-                    return false;
-                } else if (rainDropsType.get(i) == 6) { // gota invencible
-                    tarro.activarInvencibilidad(5000); // 5 segundos de invencibilidad
+
+            if (raindrop.overlaps(robot.getArea())) {
+                switch (rainDropsType.get(i)) {
+                    case 1:
+                        if (!robot.isInvencible()) {
+                            robot.dañar();
+                            if (robot.getVidas() <= 0)
+                                return false; // Game over
+                        }
+                        break;
+
+                    case 2:
+                        robot.sumarPuntos(10);
+                        dropSound.play();
+                        break;
+
+                    case 3:
+                        Poder velocidadExtra = new VelocidadExtra(5, 30);
+                        robot.agregarPoder(velocidadExtra);
+                        robot.sumarPuntos(20);
+                        break;
+
+                    case 4:
+                        Poder vidaExtra = new VidaExtra(0, 1);
+                        robot.agregarPoder(vidaExtra);
+                        dropSound.play();
+                        break;
+
+                    case 5:
+                        robot.setVidas(0);
+                        return false;
+
+                    case 6:
+                        Poder invencibilidad = new Invencibilidad(5);
+                        robot.agregarPoder(invencibilidad);
+                        break;
+
                 }
+
                 rainDropsPos.removeIndex(i);
                 rainDropsType.removeIndex(i);
             }
         }
         return true;
     }
+
 
     public void destruir() {/*...*/}
     public void pausar() {/*...*/}

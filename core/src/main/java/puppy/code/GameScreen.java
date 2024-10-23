@@ -15,7 +15,7 @@ public class GameScreen implements Screen {
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private BitmapFont font;
-    private Tarro tarro;
+    private Robot robot;
     private Lluvia lluvia;
     private Texture backgroundTexture;
     private float backgroundX;
@@ -28,7 +28,7 @@ public class GameScreen implements Screen {
         backgroundTexture = new Texture(Gdx.files.internal("fondo2.jpg"));
         backgroundX = 0;
         Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("playerhit.mp3"));
-        tarro = new Tarro(new Texture(Gdx.files.internal("bucket.png")), hurtSound);
+        robot = new Robot(hurtSound);
         Texture gota = new Texture(Gdx.files.internal("battery.png"));
         Texture gotaMala = new Texture(Gdx.files.internal("evilrobot.png"));
         Texture gotaEspecial = new Texture(Gdx.files.internal("dropSpecial.png"));
@@ -36,14 +36,14 @@ public class GameScreen implements Screen {
         Texture gotaFatal = new Texture(Gdx.files.internal("jefeFinal.png"));
         Texture gotaInvencible = new Texture(Gdx.files.internal("invencible.png")); // Nueva textura para la gota invencible
         music = Gdx.audio.newMusic(Gdx.files.internal("Knockout.mp3"));
-
         Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
-        Poderes poderes = new Poderes(gotaEspecial, gotaInvencible); // Pasar la nueva textura al constructor de Poderes
-        lluvia = new Lluvia(gota, gotaMala, poderes, gotaCurativa, gotaFatal, dropSound, music);
+        Poderes poderes = new Poderes(gotaEspecial, gotaInvencible);// Pasar la nueva textura al constructor de Poderes
+        Piezas gotaBuena = new Piezas(gota);
+        lluvia = new Lluvia(gotaBuena, gotaMala, poderes, gotaCurativa, gotaFatal, dropSound, music);
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, 1280, 720); // Configurar la cámara a 1280x720
         batch = new SpriteBatch();
-        tarro.crear();
+        robot.crear();
         lluvia.crear();
     }
 
@@ -53,20 +53,21 @@ public class GameScreen implements Screen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        batch.draw(backgroundTexture, backgroundX, 0);
-        batch.draw(backgroundTexture, backgroundX + backgroundTexture.getWidth(), 0);
+        // Dibujar el fondo repetidamente para cubrir toda la pantalla
+        batch.draw(backgroundTexture, backgroundX, 0, 1280, 720);
+        batch.draw(backgroundTexture, backgroundX + 1280, 0, 1280, 720);
         backgroundX -= 100 * delta;
-        if (backgroundX <= -backgroundTexture.getWidth()) {
+        if (backgroundX <= -1280) {
             backgroundX = 0;
         }
-        font.draw(batch, "Partes totales: " + tarro.getPuntos(), 5, 475);
-        font.draw(batch, "Vidas : " + tarro.getVidas(), 670, 475);
-        font.draw(batch, "HighScore : " + game.getHigherScore(), camera.viewportWidth / 2 - 50, 475);
-        if (!tarro.estaHerido()) {
-            tarro.actualizarMovimiento();
-            if (!lluvia.actualizarMovimiento(tarro)) {
-                if (game.getHigherScore() < tarro.getPuntos()) {
-                    game.setHigherScore(tarro.getPuntos());
+        font.draw(batch, "Partes totales: " + robot.getPuntos(), 5, 715);
+        font.draw(batch, "Vidas : " + robot.getVidas(), 1150, 715);
+        font.draw(batch, "HighScore : " + game.getHigherScore(), camera.viewportWidth / 2 - 50, 715);
+        if (!robot.estaHerido()) {
+            robot.actualizarMovimiento();
+            if (!lluvia.actualizarMovimiento(robot)) {
+                if (game.getHigherScore() < robot.getPuntos()) {
+                    game.setHigherScore(robot.getPuntos());
                 }
                 lluvia.pausar();
                 music.stop(); // Detener la música del juego
@@ -80,7 +81,7 @@ public class GameScreen implements Screen {
                 });
             }
         }
-        tarro.dibujar(batch);
+        robot.dibujar(batch);
         lluvia.actualizarDibujoLluvia(batch);
         batch.end();
     }
@@ -114,7 +115,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        tarro.destruir();
+        robot.destruir();
         lluvia.destruir();
     }
 }

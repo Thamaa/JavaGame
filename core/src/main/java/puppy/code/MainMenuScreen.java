@@ -28,7 +28,7 @@ public class MainMenuScreen implements Screen {
         this.batch = game.getBatch();
         this.font = game.getFont();
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, 1280, 720);
 
         // Imagen de fondo para la pantalla de pausa
         backgroundTexture = new Texture(Gdx.files.internal("mainmenu2.png"));
@@ -38,8 +38,8 @@ public class MainMenuScreen implements Screen {
         exitButtonTexture = new Texture(Gdx.files.internal("exitt.png"));  // Imagen de "Exit"
 
         // Crear límites de los botones para detección de toques
-        playButtonBounds = new Rectangle(300, 110, 200, 80); // Posición y tamaño del botón de Play
-        exitButtonBounds = new Rectangle(300, 15, 200, 80); // Posición y tamaño del botón de Exit
+        playButtonBounds = new Rectangle(538, 110, 200, 80); // Posición y tamaño del botón de Play
+        exitButtonBounds = new Rectangle(538, 15, 200, 80); // Posición y tamaño del botón de Exit
 
         // Cargar la música del menú
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Menu.mp3"));
@@ -54,7 +54,7 @@ public class MainMenuScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        batch.draw(backgroundTexture, 0, 0, 800, 480);
+        batch.draw(backgroundTexture, 0, 0, 1280, 720);
         batch.draw(playButtonTexture, playButtonBounds.x, playButtonBounds.y, playButtonBounds.width, playButtonBounds.height);
         batch.draw(exitButtonTexture, exitButtonBounds.x, exitButtonBounds.y, exitButtonBounds.width, exitButtonBounds.height);
         batch.end();
@@ -63,7 +63,7 @@ public class MainMenuScreen implements Screen {
         if (Gdx.input.isTouched()) {
             float touchX = Gdx.input.getX();
             float touchY = Gdx.input.getY();
-            touchY = 480 - touchY; // Invertir coordenadas Y porque Gdx usa un origen de coordenadas distinto
+            touchY = 720 - touchY; // Invertir coordenadas Y porque Gdx usa un origen de coordenadas distinto
 
             // Verificar si se presionó el botón de Play
             if (playButtonBounds.contains(touchX, touchY)) {
