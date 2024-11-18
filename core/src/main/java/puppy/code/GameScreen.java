@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
         Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
         Poderes poderes = new Poderes(gotaEspecial, gotaInvencible);// Pasar la nueva textura al constructor de Poderes
         Piezas gotaBuena = new Piezas(gota);
-        lluvia = new Lluvia(gotaBuena, gotaMala, poderes, gotaCurativa, gotaFatal, dropSound, music);
+        lluvia = Lluvia.getInstance(gotaBuena, gotaMala, poderes, gotaCurativa, gotaFatal, dropSound, music); 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1280, 720); // Configurar la cámara a 1280x720
         batch = new SpriteBatch();
