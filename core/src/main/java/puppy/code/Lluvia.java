@@ -25,7 +25,7 @@ public class Lluvia implements Interface {
     private Poderes poderes;
     private Piezas gotaBuena;
 
-    Lluvia(Piezas gotaBuena, Texture gotaMala, Poderes poderes, Texture gotaCurativa, Texture gotaFatal, Sound ss, Music mm) {
+    private Lluvia(Piezas gotaBuena, Texture gotaMala, Poderes poderes, Texture gotaCurativa, Texture gotaFatal, Sound ss, Music mm) {
         rainMusic = mm;
         dropSound = ss;
         this.gotaBuena = gotaBuena;
