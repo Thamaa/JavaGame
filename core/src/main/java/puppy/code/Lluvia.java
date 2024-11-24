@@ -130,7 +130,7 @@ public class Lluvia implements Interface {
                         break;
 
                     case 3:
-                        Poder velocidadExtra = new VelocidadExtra(5, 30);
+                        Poder velocidadExtra = new VelocidadExtra(5);
                         robot.agregarPoder(velocidadExtra);
                         robot.sumarPuntos(20);
                         break;

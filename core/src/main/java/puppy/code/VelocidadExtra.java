@@ -3,7 +3,7 @@ package puppy.code;
 public class VelocidadExtra extends Poder {
     private float incrementoVelocidad;
 
-    public VelocidadExtra(float duracion, float incrementoVelocidad) {
+    public VelocidadExtra(float duracion) {
         super("Velocidad Extra", duracion);
         this.incrementoVelocidad = incrementoVelocidad;
     }

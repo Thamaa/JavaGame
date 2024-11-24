@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
-
 import java.util.ArrayList;
 
 public class Robot implements Interface{
@@ -33,6 +32,8 @@ public class Robot implements Interface{
     // Gestión de poderes
     private ArrayList<Poder> poderesActivos;
     private long tiempoInicioPoder;
+
+    private MovimientoStrategy movimientoStrategy;
 
     public Robot(Sound sonidoHerido) {
         this.sonidoHerido = sonidoHerido;
@@ -58,8 +59,10 @@ public class Robot implements Interface{
         animacion = new Animation(1, regionMovimiento);
         tiempo = 0f;
 
+        this.movimientoStrategy = new MovimientoRobot();
         // Inicializar poderes
         poderesActivos = new ArrayList<>();
+
     }
 
     public void crear() {
@@ -96,13 +99,20 @@ public class Robot implements Interface{
         }
     }
 
+    public void setMovimientoStrategy(MovimientoStrategy movimientoStrategy) {
+        this.movimientoStrategy = movimientoStrategy;
+    }
+
+    public Rectangle getBucket() {
+        return bucket;
+    }
+
+    public float getVelx() {
+        return velx;
+    }
+
     public void actualizarMovimiento() {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) bucket.x -= velx * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) bucket.x += velx * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) bucket.x -= velx * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) bucket.x += velx * Gdx.graphics.getDeltaTime();
-        if (bucket.x < 0) bucket.x = 0;
-        if (bucket.x > 1280 - 64) bucket.x = 1280 - 64;
+        movimientoStrategy.mover(this);
     }
 
     public void destruir() {
